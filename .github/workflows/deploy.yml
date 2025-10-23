@@ -3,32 +3,30 @@ name: Deploy to WebARENA Server
 on:
   push:
     branches:
-      - main   # mainブランチにpushされたとき実行
+      - main  # mainブランチにpushされたとき実行
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # ① ソースコードを取得
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # ① リポジトリを取得
+      - uses: actions/checkout@v4
 
-      # ② Node.jsなどを使う場合（ビルドがある場合のみ）
-      # - name: Set up Node.js
-      #   uses: actions/setup-node@v4
-      #   with:
-      #     node-version: 18
-      # - name: Build project
-      #   run: npm install && npm run build
+      # ② SSH秘密鍵をファイルに書き出す
+      - name: Write SSH key to file
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
-      # ③ WebARENAにアップロード（SSH接続）
+      # ③ WebARENA にファイルをアップロード
       - name: Upload files to WebARENA
-        uses: appleboy/scp-action@v0.1.5
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          key: ~/.ssh/id_rsa
           port: 22
           source: "./*"
           target: "/var/www/html"
