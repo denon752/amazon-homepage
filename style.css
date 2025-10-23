@@ -1,0 +1,31 @@
+body {
+  font-family: 'Hiragino Sans', 'Segoe UI', sans-serif;
+  background: #fdf6f9;
+  color: #333;
+  text-align: center;
+  padding: 50px;
+}
+
+header h1 {
+  color: #e76f8a;
+  margin-bottom: 30px;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #e76f8a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #d25e79;
+}
+
+footer {
+  margin-top: 50px;
+  color: #777;
+}
