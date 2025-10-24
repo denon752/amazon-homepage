@@ -1,33 +1,25 @@
 name: Deploy to WebARENA Server
-
 on:
   push:
     branches:
-      - main  # mainブランチにpushされたとき実行
+      - main   # mainブランチにpushされたらデプロイ
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      # ① リポジトリを取得
+      # コードをGitHub Actionsランナーにチェックアウト
       - uses: actions/checkout@v4
 
-      # ② SSH秘密鍵をファイルに書き出す
-      - name: Write SSH key to file
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-
-      # ③ WebARENA にファイルをアップロード
-      - name: Upload files to WebARENA
+      # サーバーにファイルをアップロード
+      - name: Upload files via SCP
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
-          key: ~/.ssh/id_rsa
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "./*"
-          target: "/var/www/html"
-          overwrite: true
+          source: "./*"           # リポジトリのファイルを全てアップ
+          target: "/var/www/html" # Nginxのrootディレクトリ
+          overwrite: true         # 上書きする
+
