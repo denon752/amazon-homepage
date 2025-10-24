@@ -1,25 +1,31 @@
 name: Deploy to WebARENA Server
+
+# mainブランチにpushされたときに実行
 on:
   push:
     branches:
-      - main   # mainブランチにpushされたらデプロイ
+      - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      # コードをGitHub Actionsランナーにチェックアウト
+      # 1. リポジトリをチェックアウト
       - uses: actions/checkout@v4
 
-      # サーバーにファイルをアップロード
+      # 2. SCPでサーバーにアップロード
       - name: Upload files via SCP
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SERVER_HOST }}      # 116.80.58.137
+          username: ${{ secrets.SERVER_USER }}  # ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}  # 秘密鍵の中身
           port: 22
-          source: "./*"           # リポジトリのファイルを全てアップ
-          target: "/var/www/html" # Nginxのrootディレクトリ
-          overwrite: true         # 上書きする
-
+          source: "./*"                         # リポジトリ直下の全ファイル
+          target: "/var/www/html"               # Nginx root
+          overwrite: true                       # 上書き有効
+          strip_components: 0                    # フォルダ構造を保持
+          recursive: true                        # サブフォルダもコピー
+          timeout: 30
+          strict: false                          # 初回ホストキー認証をスキップ
